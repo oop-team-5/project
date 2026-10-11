@@ -218,3 +218,10 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Seoul Cycle frontend and local settings
+node_modules/
+frontend/dist/
+*.tsbuildinfo
+.env.*
+!.env.example
