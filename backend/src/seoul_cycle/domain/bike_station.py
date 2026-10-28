@@ -3,6 +3,11 @@
 from dataclasses import dataclass
 from math import isfinite
 
+from seoul_cycle.contracts.policy import (
+    SEOUL_DISTRICTS,
+    SHORTAGE_THRESHOLD,
+    SURPLUS_THRESHOLD,
+)
 from seoul_cycle.contracts.types import StationStatus
 
 
@@ -49,20 +54,11 @@ class BikeStation:
         if not -180 <= self.longitude <= 180:
             raise ValueError("longitude is out of range")
 
-        # 서울특별시 25개 자치구
-        valid_districts = {
-            "강남구", "강동구", "강북구", "강서구", "관악구",
-            "광진구", "구로구", "금천구", "노원구", "도봉구",
-            "동대문구", "동작구", "마포구", "서대문구", "서초구",
-            "성동구", "성북구", "송파구", "양천구", "영등포구",
-            "용산구", "은평구", "종로구", "중구", "중랑구",
-        }
-
         # 자치구 이름 유효성 검사
         if self.district is not None:
             if (
                 not isinstance(self.district, str)
-                or self.district not in valid_districts
+                or self.district not in SEOUL_DISTRICTS
             ):
                 raise ValueError(
                     "district must be one of Seoul's 25 districts or None"
@@ -118,10 +114,10 @@ class BikeStation:
         if rate is None:
             return "unknown"
 
-        if rate < 20:
+        if rate < SHORTAGE_THRESHOLD:
             return "shortage"
 
-        if rate <= 100:
+        if rate <= SURPLUS_THRESHOLD:
             return "normal"
 
         return "surplus"
