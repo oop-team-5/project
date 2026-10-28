@@ -49,16 +49,20 @@ npm.cmd --prefix frontend run dev
 - Source: Seoul Metropolitan Government, Seoul Open Data Plaza
 - Join key: `stationId` in the live data matches `RENT_ID` in the station metadata
 - Use `STA_LOC` as `district`; use `None` when no matching station metadata is found
-- Data collection and joining will be implemented in `ApiFetcher`
+- `ApiFetcher` collects and joins both datasets, normalizes numeric strings, and returns `BikeStation` objects
+- Each request fetches at most 1,000 rows. `bikeList.list_total_count` describes the current page, so collection continues until a short or empty final page. Station metadata uses its total count to fetch all pages
+- Missing joins or blank district values remain `None`. Invalid rows, duplicate IDs, incomplete metadata pages, and request failures raise `DataSourceError`; partial results are never returned
+- A real API key is required for full collection. The public `sample` key is limited to five rows
 
 ## Dashboard Features
 
 ### Current Status
 - Shared Protocols and DTOs, core class interfaces, and the HTTP specification are in place
 - FastAPI health check and dashboard response assembly through `DashboardController`
+- API collection and district joins, model validation and status rules, and repository queries and full replacement
 - React summary cards, station-status bar, and refresh with previous data retained on failure
-- Data collection, analysis, district charts, maps, shortage table, and filters remain TODO
-- The normal dashboard returns `501` until the remaining backend classes are implemented
+- Analysis, district charts, maps, shortage table, and filters remain TODO
+- The normal dashboard returns `501` after successful collection until `StationAnalyzer` is implemented. Missing keys or collection failures return `502`
 
 ### Planned Features
 
