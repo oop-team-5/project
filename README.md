@@ -18,7 +18,7 @@ Copy-Item .env.example .env
 ```
 
 Set your Seoul Open Data API key as `SEOUL_API_KEY` in `.env` or as a system environment variable
-Note: the welcome screen and server health check are available without an API key
+The server health check and the development preview below are available without an API key
 
 ### Backend: Terminal 1
 
@@ -36,6 +36,7 @@ npm.cmd --prefix frontend run dev
 ```
 
 - [Frontend](http://127.0.0.1:5173)
+- [Development preview](http://127.0.0.1:5173/?mock): sample data; excluded from production builds
 
 
 ## Data Used
@@ -54,8 +55,10 @@ npm.cmd --prefix frontend run dev
 
 ### Current Status
 - Shared Protocols and DTOs, core class interfaces, and the HTTP specification are in place
-- FastAPI health check, React connection screen, and connection retry
-- Data collection, storage, analysis, dashboard response assembly, maps, and charts remain TODO
+- FastAPI health check and dashboard response assembly through `DashboardController`
+- React summary cards, station-status bar, and refresh with previous data retained on failure
+- Data collection, analysis, district charts, maps, shortage table, and filters remain TODO
+- The normal dashboard returns `501` until the remaining backend classes are implemented
 
 ### Planned Features
 

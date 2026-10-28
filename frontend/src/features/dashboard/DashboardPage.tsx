@@ -1,62 +1,73 @@
-import { useEffect, useState } from "react";
-import { getHealth } from "../../api/client";
+import { refreshDashboard } from "../../api/client";
+import { formatFetchedAt } from "./format";
+import { SummaryCards } from "./SummaryCards";
+import { useDashboardSnapshot, type SnapshotLoader } from "./useDashboardSnapshot";
 
-type ConnectionState = "checking" | "connected" | "disconnected";
+// 개발 서버에서 주소에 ?mock이 붙으면 예시 데이터 사용
+const isMockMode =
+  import.meta.env.DEV && new URLSearchParams(window.location.search).has("mock");
 
-const statusLabels: Record<ConnectionState, string> = {
-  checking: "백엔드 연결 확인 중",
-  connected: "백엔드 연결됨",
-  disconnected: "백엔드 연결 안 됨",
-};
+const loadSnapshot: SnapshotLoader = isMockMode
+  ? async (signal) => (await import("./mock/mockSnapshot")).loadMockSnapshot(signal)
+  : refreshDashboard;
 
-/** 작업 영역 4. 지금은 연결 안내만 표시하며 대시보드 구현은 담당자에게 남긴다. */
+/** 작업 영역 4. 대시보드 화면 */
 export function DashboardPage() {
-  const [connection, setConnection] = useState<ConnectionState>("checking");
-  const [attempt, setAttempt] = useState(0);
-
-  useEffect(() => {
-    const controller = new AbortController();
-    setConnection("checking");
-    void getHealth(controller.signal)
-      .then(() => {
-        if (!controller.signal.aborted) setConnection("connected");
-      })
-      .catch(() => {
-        if (!controller.signal.aborted) setConnection("disconnected");
-      });
-    return () => controller.abort();
-  }, [attempt]);
+  const { snapshot, isLoading, errorMessage, refresh } = useDashboardSnapshot(loadSnapshot);
 
   // TODO[UI]: DashboardSnapshot을 사용하는 카드·자치구 차트·지도·부족 목록.
   // 전체 갱신은 refreshDashboard()로 요청한다. 실패하면 기존 snapshot을 유지한다.
   // 검색/상태 필터는 지도와 표에만 적용하고, 숫자/상태/평균은 재계산하지 않는다.
+  // (진행: 카드와 새로고침 완료 / 남음: 자치구 차트·지도·부족 목록·검색/상태 필터)
+
   return (
-    <main className="welcome">
-      <p className="brand">Seoul Cycle<span aria-hidden="true">.</span></p>
-      <section className="welcome-card" aria-labelledby="welcome-title">
-        <p className="eyebrow">TEAM PROJECT · DEVELOPMENT</p>
-        <h1 id="welcome-title">대시보드 구현 준비가 되었습니다.</h1>
-        <p className="description">
-          서울 공공자전거 데이터를 연결할 기본 구조입니다.
-          <br />{" "}
-          수집·저장·분석·시각화는 각 담당 영역에서 구현합니다.
-        </p>
-        <div className="connection" role="status" aria-live="polite">
-          <span className={`status-dot ${connection}`} aria-hidden="true" />
-          <span>{statusLabels[connection]}</span>
+    <div className="dashboard">
+      <header className="topbar">
+        <div>
+          <p className="brand">
+            Seoul Cycle<span aria-hidden="true">.</span>
+          </p>
+          <p className="tagline">서울 공공자전거 따릉이 실시간 거치 현황</p>
         </div>
-        {connection === "disconnected" && (
-          <p className="hint">백엔드 실행 후 연결을 다시 확인해 주세요.</p>
+        <div className="topbar-actions">
+          {isMockMode && <span className="badge">예시 데이터</span>}
+          {snapshot && (
+            <span className="fetched-at">기준 {formatFetchedAt(snapshot.fetchedAt)}</span>
+          )}
+          <button type="button" onClick={refresh} disabled={isLoading}>
+            {isLoading ? "불러오는 중..." : "새로고침"}
+          </button>
+        </div>
+      </header>
+
+      <main className="content">
+        {errorMessage && (
+          <p className="notice error" role="alert">
+            {errorMessage}
+            {snapshot && " 마지막으로 불러온 데이터를 계속 표시합니다."}
+          </p>
         )}
-        <button
-          type="button"
-          disabled={connection === "checking"}
-          onClick={() => setAttempt((previous) => previous + 1)}
-        >
-          연결 다시 확인
-        </button>
-      </section>
-      <p className="footer-note">공유 계약을 기준으로 각자의 구현을 연결합니다.</p>
-    </main>
+
+        {snapshot ? (
+          <SummaryCards summary={snapshot.summary} />
+        ) : (
+          <section className="card empty-state" aria-live="polite">
+            {isLoading ? (
+              <p>서울시 데이터를 불러오는 중입니다.</p>
+            ) : (
+              <>
+                <p>표시할 데이터가 없습니다.</p>
+                {import.meta.env.DEV && !isMockMode && (
+                  <p className="hint">
+                    백엔드 수집 기능이 완성되기 전에는 주소 뒤에 <code>?mock</code>을 붙여
+                    예시 데이터로 화면을 확인할 수 있습니다.
+                  </p>
+                )}
+              </>
+            )}
+          </section>
+        )}
+      </main>
+    </div>
   );
 }
