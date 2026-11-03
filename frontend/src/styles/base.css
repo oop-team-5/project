@@ -74,6 +74,16 @@ button:disabled { opacity: 0.55; cursor: wait; }
 .status-surplus { background: var(--status-surplus); }
 .status-unknown { background: var(--status-unknown); }
 
+/* 지도 */
+.map-card { display: grid; gap: 14px; }
+.map-card-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px; }
+.station-map { height: 520px; border-radius: 12px; background: var(--surface-raised); }
+.station-popup { min-width: 170px; color: var(--accent-ink); font-size: 13px; line-height: 1.6; }
+.station-popup strong { display: block; margin-bottom: 4px; font-size: 14px; }
+.station-popup dl { display: grid; grid-template-columns: auto 1fr; gap: 2px 12px; margin: 0; }
+.station-popup dt { color: #5b6656; }
+.station-popup dd { margin: 0; font-variant-numeric: tabular-nums; }
+
 @media (max-width: 900px) {
   .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
@@ -81,4 +91,5 @@ button:disabled { opacity: 0.55; cursor: wait; }
 @media (max-width: 520px) {
   .dashboard { width: calc(100% - 32px); padding-top: 20px; }
   .card { padding: 18px; }
+  .station-map { height: 380px; }
 }
