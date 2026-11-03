@@ -57,10 +57,10 @@ npm.cmd --prefix frontend run dev
 ### Current status
 - Shared Protocols and DTOs, core class interfaces, and the HTTP specification are in place.
 - FastAPI provides the health check, and `DashboardController` assembles dashboard responses.
-- API collection, district joins, model validation, status rules, repository queries, and full replacement are implemented.
+- API collection, district joins, model validation, status rules, repository queries, full replacement, and overall/district statistics with the sorted shortage list (`StationAnalyzer`) are implemented.
 - React displays summary cards and a station-status bar. A failed refresh leaves the previous data in place.
-- Analysis, district charts, maps, the shortage table, and filters are still TODO.
-- The normal dashboard returns `501` even after a successful collection until `StationAnalyzer` is implemented. Missing keys and collection failures return `502`.
+- District charts, maps, the shortage table, and filters are still TODO.
+- After a successful collection, the dashboard returns the full snapshot. Missing keys and collection failures return `502`.
 
 ### Planned features
 
