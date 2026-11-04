@@ -18,6 +18,6 @@ def loadSettings() -> Settings:
     values = {**dotenv_values(".env"), **os.environ}
     return Settings(
         apiUrl=values.get("SEOUL_API_BASE_URL") or "http://openapi.seoul.go.kr:8088",
-        apiKey=values.get("SEOUL_API_KEY") or "",
+        apiKey=os.environ.get("KEY") or os.environ.get("SEOUL_API_KEY") or values.get("KEY") or values.get("SEOUL_API_KEY") or "",
         timeout=float(values.get("SEOUL_API_TIMEOUT") or "10.0"),
     )
