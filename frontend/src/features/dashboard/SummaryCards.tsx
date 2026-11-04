@@ -1,74 +1,106 @@
-import type { StationStats, StationStatus } from "../../api/types";
-import { formatCount, formatRate } from "./format";
-import { STATUS_LABELS, STATUS_ORDER } from "./statusMeta";
+import { messages, type Language } from "./i18n";
+import type { StationStats } from "../../api/types";
+import { formatCount, formatFetchedAt } from "./format";
+import { ArrowIcon, InfoIcon } from "./Icons";
 
-interface SummaryCardsProps {
+export function SummaryCards({
+  language,
+  summary,
+  fetchedAt,
+  onRefresh,
+  isLoading,
+}: {
+  language: Language;
   summary: StationStats;
-}
-
-function countOf(summary: StationStats, status: StationStatus): number {
-  switch (status) {
-    case "shortage":
-      return summary.shortageCount;
-    case "normal":
-      return summary.normalCount;
-    case "surplus":
-      return summary.surplusCount;
-    case "unknown":
-      return summary.unknownCount;
-  }
-}
-
-export function SummaryCards({ summary }: SummaryCardsProps) {
-  const total = summary.stationCount;
-
+  fetchedAt: string;
+  onRefresh: () => void;
+  isLoading: boolean;
+}) {
+  const t = messages[language];
+  const rate = summary.averageOccupancyRate;
+  const gauge = Math.max(0, Math.min(100, rate ?? 0));
   return (
-    <section className="summary" aria-label="전체 요약">
-      <div className="kpi-grid">
-        <article className="card kpi">
-          <h2>전체 대여소</h2>
-          <p className="kpi-value">{formatCount(summary.stationCount)}</p>
-          <p className="kpi-sub">곳</p>
-        </article>
-        <article className="card kpi">
-          <h2>대여 가능 자전거</h2>
-          <p className="kpi-value">{formatCount(summary.availableBikes)}</p>
-          <p className="kpi-sub">거치대 {formatCount(summary.totalRacks)}개</p>
-        </article>
-        <article className="card kpi">
-          <h2>평균 거치율</h2>
-          <p className="kpi-value">{formatRate(summary.averageOccupancyRate)}</p>
-          <p className="kpi-sub">대여소별 거치율의 평균</p>
-        </article>
-        <article className="card kpi alert">
-          <h2>부족 대여소</h2>
-          <p className="kpi-value">{formatCount(summary.shortageCount)}</p>
-          <p className="kpi-sub">서버가 부족으로 판정한 곳</p>
-        </article>
-      </div>
-
-      <article className="card status-card">
-        <h2>상태별 대여소</h2>
-        <div className="status-bar" aria-hidden="true">
-          {total > 0 &&
-            STATUS_ORDER.map((status) => (
-              <span
-                key={status}
-                className={`status-segment status-${status}`}
-                style={{ flexGrow: countOf(summary, status) }}
-              />
-            ))}
+    <section className="card overview" aria-label={t.title}>
+      <div className="section-heading">
+        <div>
+          <h1>{t.title}</h1>
+          <p>{t.timestamp(formatFetchedAt(fetchedAt, language))}</p>
         </div>
-        <ul className="status-legend">
-          {STATUS_ORDER.map((status) => (
-            <li key={status}>
-              <span className={`legend-dot status-${status}`} aria-hidden="true" />
-              {STATUS_LABELS[status]}
-              <strong>{formatCount(countOf(summary, status))}</strong>
-            </li>
-          ))}
-        </ul>
-      </article>
+        <button
+          className="refresh"
+          onClick={onRefresh}
+          disabled={isLoading}
+          aria-label={t.refresh}
+          title={t.refresh}
+        >
+          ↗
+        </button>
+      </div>
+      <div className="gauge">
+        <svg viewBox="0 0 240 135" aria-hidden="true">
+          <path
+            d="M 16 120 A 104 104 0 0 1 224 120"
+            pathLength="100"
+            className="gauge-track"
+          />
+          <path
+            d="M 16 120 A 104 104 0 0 1 224 120"
+            pathLength="100"
+            className="gauge-value"
+            strokeDasharray={`${gauge} 100`}
+          />
+        </svg>
+        <div className="gauge-label">
+          <strong>
+            {rate === null ? "-" : Math.round(rate)}
+            <small>%</small>
+          </strong>
+          <span>{t.averageRate}</span>
+        </div>
+      </div>
+      <div className="overview-stats">
+        <div>
+          <strong>
+            {formatCount(summary.availableBikes)}
+            <small>{t.bikeUnit}</small>
+          </strong>
+          <span>{t.available}</span>
+        </div>
+        <div className="shortage-text">
+          <strong>
+            {formatCount(summary.shortageCount)}
+            <small>{t.stationUnit}</small>
+          </strong>
+          <span>{t.shortage}</span>
+          <small>{t.shortageRule}</small>
+        </div>
+        <div className="surplus-text">
+          <strong>
+            {formatCount(summary.surplusCount)}
+            <small>{t.stationUnit}</small>
+          </strong>
+          <span>{t.surplus}</span>
+          <small>{t.surplusRule}</small>
+        </div>
+      </div>
+      <button
+        className="todo-action"
+        type="button"
+        disabled
+        title={t.comingSoon}
+      >
+        <strong>{t.viewShortage}</strong>
+        <ArrowIcon />
+      </button>
+      <div className="criteria">
+        <InfoIcon />
+        <span>{t.criteria}</span>
+        <span>
+          {t.below} <b>{t.statuses.shortage}</b>
+        </span>
+        <span>{t.normalRule}</span>
+        <span>{t.aboveRule}</span>
+      </div>
     </section>
   );
 }

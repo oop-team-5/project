@@ -17,7 +17,7 @@ npm.cmd --prefix frontend ci
 Copy-Item .env.example .env
 ```
 
-Set `SEOUL_API_KEY` to your Seoul Open Data API key in `.env` or as a system environment variable. You can use the server health check and development preview without a key.
+Set `KEY` to your Seoul Open Data API key in `.env` or as a system environment variable. `SEOUL_API_KEY` is also supported for compatibility. You can use the server health check and development preview without a key.
 
 ### Backend: terminal 1
 

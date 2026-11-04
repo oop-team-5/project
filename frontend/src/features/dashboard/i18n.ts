@@ -1,0 +1,160 @@
+import type { StationStatus } from "../../api/types";
+
+export type Language = "ko" | "en";
+export const LANGUAGE_KEY = "seoul-cycle-language";
+
+export const messages = {
+  ko: {
+    navigation: "주 메뉴",
+    overviewNav: "운영 현황",
+    districtNav: "자치구 분석",
+    stationsNav: "대여소",
+    sample: "예시 데이터",
+    refresh: "데이터 새로고침",
+    title: "서울 자전거 운영 현황",
+    timestamp: (date: string) => `${date} 기준`,
+    averageRate: "평균 거치율",
+    available: "대여 가능 자전거",
+    shortage: "부족 대여소",
+    surplus: "과잉 대여소",
+    shortageRule: "거치율 20% 미만",
+    surplusRule: "거치율 100% 초과",
+    bikeUnit: "대",
+    stationUnit: "개",
+    viewShortage: "부족 대여소 보기",
+    comingSoon: "준비 중",
+    criteria: "거치율 기준",
+    below: "20% 미만:",
+    normalRule: "20–100%: 적정",
+    aboveRule: "100% 초과: 과잉",
+    districtComparison: "자치구별 거치율 비교",
+    shortageStations: "부족 대여소 현황",
+    loading: "서울시 데이터를 불러오는 중입니다.",
+    empty: "표시할 데이터가 없습니다.",
+    lastData: " 마지막으로 불러온 데이터를 계속 표시합니다.",
+    networkError:
+      "백엔드 서버에 연결할 수 없습니다. 서버가 실행 중인지 확인해 주세요.",
+    sourceError:
+      "서울시 데이터를 가져오지 못했습니다. 잠시 후 다시 시도해 주세요.",
+    genericError: "데이터를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.",
+    notImplemented: "아직 구현되지 않은 기능입니다.",
+    map: "대여소 지도",
+    mapTodos: "검색 및 거치율 필터 미구현",
+    mapHint: "일부 대여소만 표시 중 · 확대하면 더 자세히 볼 수 있습니다",
+    mapLocation: "서울시 25개 자치구",
+    zoomIn: "지도 확대",
+    zoomOut: "지도 축소",
+    unknownDistrict: "미분류",
+    occupancy: "거치율",
+    legendShortage: "부족 (20% 미만)",
+    legendNormal: "적정 (20–100%)",
+    legendSurplus: "과잉 (100% 초과)",
+    legendUnknown: "미상",
+    statuses: {
+      shortage: "부족",
+      normal: "보통",
+      surplus: "과잉",
+      unknown: "정보 없음",
+    } satisfies Record<StationStatus, string>,
+    documentTitle: "Seoul Cycle · 따릉이 거치 현황",
+    description: "서울 공공자전거 따릉이 대여소 거치 현황 대시보드",
+  },
+  en: {
+    navigation: "Main navigation",
+    overviewNav: "Overview",
+    districtNav: "Districts",
+    stationsNav: "Stations",
+    sample: "Sample data",
+    refresh: "Refresh data",
+    title: "Seoul bike status",
+    timestamp: (date: string) => `Updated ${date}`,
+    averageRate: "Average occupancy",
+    available: "Bikes available",
+    shortage: "Low supply",
+    surplus: "Above capacity",
+    shortageRule: "Under 20% occupancy",
+    surplusRule: "Over 100% occupancy",
+    bikeUnit: "",
+    stationUnit: "",
+    viewShortage: "View low-supply stations",
+    comingSoon: "Coming soon",
+    criteria: "Occupancy",
+    below: "Under 20%:",
+    normalRule: "20–100%: Normal",
+    aboveRule: "Over 100%: High",
+    districtComparison: "Occupancy by district",
+    shortageStations: "Low-supply stations",
+    loading: "Loading Seoul bike data…",
+    empty: "No data to display.",
+    lastData: " Showing the last successful update.",
+    networkError:
+      "Unable to connect to the server. Please check the connection.",
+    sourceError: "Unable to load Seoul data. Please try again later.",
+    genericError: "Unable to load data. Please try again later.",
+    notImplemented: "This feature is not yet available.",
+    map: "Bike station map",
+    mapTodos: "Search and occupancy filter are not yet available",
+    mapHint: "Showing some stations · Zoom in for more detail",
+    mapLocation: "25 districts of Seoul",
+    zoomIn: "Zoom in",
+    zoomOut: "Zoom out",
+    unknownDistrict: "Unclassified",
+    occupancy: "Occupancy",
+    legendShortage: "Low (under 20%)",
+    legendNormal: "Normal (20–100%)",
+    legendSurplus: "High (over 100%)",
+    legendUnknown: "Unknown",
+    statuses: {
+      shortage: "Low",
+      normal: "Normal",
+      surplus: "High",
+      unknown: "Unknown",
+    } satisfies Record<StationStatus, string>,
+    documentTitle: "Seoul Cycle · Bike station status",
+    description: "A dashboard of Seoul public bike station occupancy.",
+  },
+} as const;
+
+const districts: Record<string, string> = {
+  강남구: "Gangnam-gu",
+  강동구: "Gangdong-gu",
+  강북구: "Gangbuk-gu",
+  강서구: "Gangseo-gu",
+  관악구: "Gwanak-gu",
+  광진구: "Gwangjin-gu",
+  구로구: "Guro-gu",
+  금천구: "Geumcheon-gu",
+  노원구: "Nowon-gu",
+  도봉구: "Dobong-gu",
+  동대문구: "Dongdaemun-gu",
+  동작구: "Dongjak-gu",
+  마포구: "Mapo-gu",
+  서대문구: "Seodaemun-gu",
+  서초구: "Seocho-gu",
+  성동구: "Seongdong-gu",
+  성북구: "Seongbuk-gu",
+  송파구: "Songpa-gu",
+  양천구: "Yangcheon-gu",
+  영등포구: "Yeongdeungpo-gu",
+  용산구: "Yongsan-gu",
+  은평구: "Eunpyeong-gu",
+  종로구: "Jongno-gu",
+  중구: "Jung-gu",
+  중랑구: "Jungnang-gu",
+};
+export function districtName(
+  district: string | null,
+  language: Language,
+): string {
+  if (!district) return messages[language].unknownDistrict;
+  return language === "en" ? (districts[district] ?? district) : district;
+}
+export function initialLanguage(): Language {
+  try {
+    const saved = localStorage.getItem(LANGUAGE_KEY);
+    if (saved === "ko" || saved === "en") return saved;
+  } catch {
+    /* Storage may be unavailable. */
+  }
+  return /^ko(?:-|$)/i.test(navigator.language) ? "ko" : "en";
+}
