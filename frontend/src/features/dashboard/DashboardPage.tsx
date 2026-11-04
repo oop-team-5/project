@@ -1,5 +1,6 @@
 import { refreshDashboard } from "../../api/client";
 import { formatFetchedAt } from "./format";
+import { StationMap } from "./StationMap";
 import { SummaryCards } from "./SummaryCards";
 import { useDashboardSnapshot, type SnapshotLoader } from "./useDashboardSnapshot";
 
@@ -18,7 +19,7 @@ export function DashboardPage() {
   // TODO[UI]: DashboardSnapshot을 사용하는 카드·자치구 차트·지도·부족 목록.
   // 전체 갱신은 refreshDashboard()로 요청한다. 실패하면 기존 snapshot을 유지한다.
   // 검색/상태 필터는 지도와 표에만 적용하고, 숫자/상태/평균은 재계산하지 않는다.
-  // (진행: 카드와 새로고침 완료 / 남음: 자치구 차트·지도·부족 목록·검색/상태 필터)
+  // (진행: 카드·새로고침·지도 완료 / 남음: 자치구 차트·부족 목록·검색/상태 필터)
 
   return (
     <div className="dashboard">
@@ -49,7 +50,10 @@ export function DashboardPage() {
         )}
 
         {snapshot ? (
-          <SummaryCards summary={snapshot.summary} />
+          <>
+            <SummaryCards summary={snapshot.summary} />
+            <StationMap stations={snapshot.stations} />
+          </>
         ) : (
           <section className="card empty-state" aria-live="polite">
             {isLoading ? (
