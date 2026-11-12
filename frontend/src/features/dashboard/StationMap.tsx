@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { divIcon, type LatLngBoundsExpression } from "leaflet";
 import {
   MapContainer,
@@ -54,6 +54,25 @@ function ResizeMap() {
     observer.observe(map.getContainer());
     return () => observer.disconnect();
   }, [map]);
+  return null;
+}
+// 검색이나 필터로 고른 대여소가 적으면 그 위치로 지도를 옮긴다.
+const FOCUS_LIMIT = 400;
+function FocusOnStations({
+  stations,
+  active,
+}: {
+  stations: StationView[];
+  active: boolean;
+}) {
+  const map = useMap();
+  useEffect(() => {
+    if (!active || stations.length === 0 || stations.length > FOCUS_LIMIT) return;
+    const points = stations.map(
+      (station) => [station.latitude, station.longitude] as [number, number],
+    );
+    map.fitBounds(points, { padding: [80, 80], maxZoom: 16 });
+  }, [map, stations, active]);
   return null;
 }
 function StationMarkers({
@@ -132,9 +151,13 @@ function StationMarkers({
 export function StationMap({
   stations,
   language,
+  controls,
+  focusOnStations = false,
 }: {
   stations: StationView[];
   language: Language;
+  controls?: ReactNode;
+  focusOnStations?: boolean;
 }) {
   const t = messages[language];
   return (
@@ -153,12 +176,10 @@ export function StationMap({
         <LimitZoomToSeoul />
         <ResizeMap />
         <StationMarkers stations={stations} language={language} />
+        <FocusOnStations stations={stations} active={focusOnStations} />
         <MapZoom language={language} />
       </MapContainer>
-      <div className="map-todos" aria-label={t.mapTodos}>
-        <strong>TODO</strong>
-        <strong>TODO</strong>
-      </div>
+      {controls}
       <div className="map-legend">
         <span>
           <i className="dot shortage" />

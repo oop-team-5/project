@@ -1,9 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ApiError, refreshDashboard } from "../../api/client";
 import { formatFetchedAt } from "./format";
 import { initialLanguage, LANGUAGE_KEY, messages } from "./i18n";
+import { DistrictComparison } from "./DistrictComparison";
 import { BikeIcon } from "./Icons";
+import { MapFilters } from "./MapFilters";
+import { ShortageTable } from "./ShortageTable";
 import { StationMap } from "./StationMap";
+import {
+  filterStations,
+  isFilterActive,
+  type StatusFilter,
+} from "./stationFilters";
 import { SummaryCards } from "./SummaryCards";
 import {
   useDashboardSnapshot,
@@ -39,6 +47,19 @@ export function DashboardPage() {
   };
   const { snapshot, isLoading, error, refresh } =
     useDashboardSnapshot(loadSnapshot);
+  // 검색, 상태, 자치구 선택은 지도와 표에만 적용하고, 요약과 통계 숫자에는 적용하지 않는다.
+  const [query, setQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const [district, setDistrict] = useState<string | null>(null);
+  const filters = useMemo(
+    () => ({ query, status: statusFilter, district }),
+    [query, statusFilter, district],
+  );
+  const mapStations = useMemo(
+    () => filterStations(snapshot?.stations ?? [], filters),
+    [snapshot, filters],
+  );
+  const isFiltering = isFilterActive(filters);
   const errorMessage =
     error instanceof ApiError
       ? language === "ko"
@@ -108,17 +129,37 @@ export function DashboardPage() {
               onRefresh={refresh}
               isLoading={isLoading}
             />
-            <section className="card district-card">
-              <h2>{t.districtComparison}</h2>
-              <strong className="todo">TODO</strong>
-            </section>
+            <DistrictComparison
+              districtStats={snapshot.districtStats}
+              selected={district}
+              onSelect={setDistrict}
+              language={language}
+            />
           </div>
           <div className="right-column">
-            <StationMap stations={snapshot.stations} language={language} />
-            <section className="card shortage-card">
-              <h2>{t.shortageStations}</h2>
-              <strong className="todo">TODO</strong>
-            </section>
+            <StationMap
+              stations={mapStations}
+              language={language}
+              focusOnStations={isFiltering}
+              controls={
+                <MapFilters
+                  language={language}
+                  query={query}
+                  status={statusFilter}
+                  resultCount={mapStations.length}
+                  isFiltering={isFiltering}
+                  onQueryChange={setQuery}
+                  onStatusChange={setStatusFilter}
+                />
+              }
+            />
+            <ShortageTable
+              stations={snapshot.stations}
+              shortageStationIds={snapshot.shortageStationIds}
+              query={query}
+              district={district}
+              language={language}
+            />
           </div>
         </main>
       ) : (
