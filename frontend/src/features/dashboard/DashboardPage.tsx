@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ApiError, refreshDashboard } from "../../api/client";
 import { formatFetchedAt } from "./format";
 import { initialLanguage, LANGUAGE_KEY, messages } from "./i18n";
+import { DistrictAnalysis } from "./DistrictAnalysis";
 import { DistrictComparison } from "./DistrictComparison";
 import { BikeIcon } from "./Icons";
 import { MapFilters } from "./MapFilters";
@@ -51,6 +52,16 @@ export function DashboardPage() {
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [district, setDistrict] = useState<string | null>(null);
+  const [view, setView] = useState<"overview" | "districts">("overview");
+  const showAnalysis = () => {
+    setView("districts");
+    window.scrollTo({ top: 0 });
+  };
+  const showDistrictOnMap = (name: string) => {
+    setDistrict(name);
+    setView("overview");
+    window.scrollTo({ top: 0 });
+  };
   const filters = useMemo(
     () => ({ query, status: statusFilter, district }),
     [query, statusFilter, district],
@@ -80,9 +91,22 @@ export function DashboardPage() {
           <span>Seoul Cycle.</span>
         </div>
         <nav aria-label={t.navigation}>
-          <span className="nav-active">{t.overviewNav}</span>
-          <span>{t.districtNav}</span>
-          <span>{t.stationsNav}</span>
+          <button
+            type="button"
+            className={view === "overview" ? "nav-active" : undefined}
+            aria-current={view === "overview" ? "page" : undefined}
+            onClick={() => setView("overview")}
+          >
+            {t.overviewNav}
+          </button>
+          <button
+            type="button"
+            className={view === "districts" ? "nav-active" : undefined}
+            aria-current={view === "districts" ? "page" : undefined}
+            onClick={() => setView("districts")}
+          >
+            {t.districtNav}
+          </button>
         </nav>
         <div className="topbar-actions">
           {isMockMode && <span>{t.sample}</span>}
@@ -119,7 +143,14 @@ export function DashboardPage() {
           {snapshot && t.lastData}
         </p>
       )}
-      {snapshot ? (
+      {snapshot && view === "districts" ? (
+        <DistrictAnalysis
+          districtStats={snapshot.districtStats}
+          summary={snapshot.summary}
+          language={language}
+          onShowOnMap={showDistrictOnMap}
+        />
+      ) : snapshot ? (
         <main className="content">
           <div className="left-column">
             <SummaryCards
@@ -127,6 +158,7 @@ export function DashboardPage() {
               summary={snapshot.summary}
               fetchedAt={snapshot.fetchedAt}
               onRefresh={refresh}
+              onShowAnalysis={showAnalysis}
               isLoading={isLoading}
             />
             <DistrictComparison

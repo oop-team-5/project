@@ -72,9 +72,19 @@ p {
   color: #c2c2be;
   font-size: 21px;
 }
-.topbar nav span {
+.topbar nav span,
+.topbar nav button {
   padding: 18px 25px;
   white-space: nowrap;
+}
+.topbar nav button {
+  border: 1px solid transparent;
+  border-radius: 40px;
+  background: transparent;
+  color: inherit;
+}
+.topbar nav button:not(.nav-active):hover {
+  color: #f5f5f0;
 }
 .topbar nav .nav-active {
   color: #f5f5f0;
@@ -185,10 +195,20 @@ p {
   color: #c4c4c0;
   font-size: 22px;
 }
+.overview-meta {
+  margin: 0;
+  color: #aaa;
+  font-size: 18px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
 .overview-stats {
   display: grid;
   grid-template-columns: 1.12fr 1fr 1fr;
   margin: 34px 0 18px;
+}
+.overview-meta + .overview-stats {
+  margin-top: 26px;
 }
 .overview-stats > div {
   min-width: 0;
@@ -224,7 +244,7 @@ p {
 .surplus-text {
   color: #e8d77c;
 }
-.todo-action {
+.overview-action {
   width: 100%;
   border: 0;
   height: 78px;
@@ -236,12 +256,17 @@ p {
   justify-content: center;
   gap: 24px;
   font-size: 22px;
+  cursor: pointer;
+  transition: background 0.15s;
 }
-.todo-action:disabled {
-  opacity: 1;
-  cursor: not-allowed;
+.overview-action:hover {
+  background: #f1f1c6;
 }
-.todo-action svg {
+.overview-action:focus-visible {
+  outline: 2px solid #f5f5f0;
+  outline-offset: 3px;
+}
+.overview-action svg {
   width: 24px;
 }
 .criteria {
@@ -370,6 +395,376 @@ p {
   font-size: 14px;
   text-align: right;
   white-space: nowrap;
+}
+
+/* 자치구 분석 화면 */
+.analysis {
+  display: grid;
+  gap: 14px;
+}
+.analysis-highlights {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+.highlight {
+  display: grid;
+  gap: 8px;
+  padding: 26px 28px;
+}
+.highlight span {
+  color: #aaa;
+  font-size: 16px;
+}
+.highlight strong {
+  font-size: 26px;
+  letter-spacing: -1px;
+}
+.highlight b {
+  color: #d2e2ad;
+  font-size: 22px;
+  font-variant-numeric: tabular-nums;
+}
+.shortage-highlight b {
+  color: #ff7772;
+}
+.analysis-charts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.analysis-card {
+  min-width: 0;
+  padding: 30px 30px 26px;
+}
+.analysis-note {
+  margin-top: 8px;
+  color: #aaa;
+  font-size: 16px;
+}
+.analysis-section-heading {
+  padding: 18px 6px 0;
+}
+.analysis-section-heading h2 {
+  font-size: 30px;
+  letter-spacing: -1.4px;
+}
+.analysis-section-heading p {
+  margin-top: 8px;
+  color: #aaa;
+  font-size: 16px;
+}
+.analysis-source {
+  margin-top: 12px;
+  color: #8d8e89;
+  font-size: 13px;
+}
+
+/* SVG 차트 공통 */
+.chart {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-top: 16px;
+  overflow: visible;
+}
+.chart text {
+  font-size: 13px;
+}
+.chart-grid line {
+  stroke: #2c2e2c;
+  stroke-width: 1;
+}
+.chart-grid text,
+.chart-axis {
+  fill: #8d8e89;
+}
+.chart-label {
+  fill: #e7e7e3;
+  font-weight: 700;
+}
+.chart-hit {
+  fill: transparent;
+  cursor: pointer;
+}
+.chart-tooltip rect {
+  fill: #f5f5f0;
+}
+.chart-tooltip text {
+  fill: #222;
+  font-size: 13px;
+}
+.chart-tooltip .tooltip-value {
+  font-weight: 700;
+}
+.line-path {
+  fill: none;
+  stroke: #ff7772;
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+.line-area {
+  fill: #ff7772;
+  opacity: 0.12;
+}
+.line-point {
+  fill: #ff7772;
+  stroke: #1d1f1e;
+  stroke-width: 2;
+}
+.line-point.active {
+  stroke: #f5f5f0;
+}
+
+/* 평균 거치율 지도 */
+.district-heatmap {
+  height: 380px;
+  margin-top: 16px;
+  border-radius: 18px;
+  background: #1d1f1e;
+}
+.district-label {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  color: #1d1f1e;
+  font-size: 11px;
+  line-height: 1.2;
+  text-align: center;
+  text-shadow: 0 0 2px #fff8, 0 0 2px #fff8;
+  pointer-events: none;
+}
+.district-label::before {
+  display: none;
+}
+.district-label b,
+.district-label span {
+  display: block;
+}
+.heatmap-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+  color: #c2c2be;
+  font-size: 13px;
+}
+.heatmap-legend li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.heatmap-legend i {
+  width: 18px;
+  height: 12px;
+  border-radius: 3px;
+}
+
+/* 부족과 과잉 (나비형 막대) */
+.balance-legend,
+.capacity-legend {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 14px;
+  color: #c2c2be;
+  font-size: 14px;
+}
+.capacity-legend {
+  justify-content: flex-start;
+}
+.balance-legend span,
+.capacity-legend span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.balance-legend i {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+.balance-chart,
+.capacity-chart {
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.balance-chart button,
+.capacity-chart button {
+  width: 100%;
+  display: grid;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 6px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: #e7e7e3;
+  font-size: 14px;
+  text-align: left;
+}
+.balance-chart button:hover,
+.capacity-chart button:hover {
+  background: #262826;
+}
+.balance-chart button {
+  grid-template-columns: minmax(0, 1fr) 82px minmax(0, 1fr);
+}
+.balance-side {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-variant-numeric: tabular-nums;
+}
+.balance-side b {
+  min-width: 28px;
+}
+.balance-side.left b {
+  text-align: left;
+}
+.balance-side.right b {
+  text-align: right;
+}
+.balance-track {
+  flex: 1;
+  display: flex;
+  height: 10px;
+}
+.balance-side.left .balance-track {
+  justify-content: flex-end;
+}
+.balance-track span {
+  height: 100%;
+  border-radius: 4px;
+}
+.balance-name {
+  overflow: hidden;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 자전거와 거치대 (아령형 막대) */
+.capacity-chart button {
+  grid-template-columns: 82px minmax(0, 1fr) 104px;
+}
+.capacity-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.capacity-track {
+  position: relative;
+  height: 16px;
+  margin: 0 8px;
+}
+.capacity-track::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 7px;
+  height: 2px;
+  background: #2c2e2c;
+}
+.capacity-link {
+  position: absolute;
+  top: 6px;
+  height: 4px;
+  background: #6b7d59;
+}
+.capacity-track i {
+  position: absolute;
+  top: 2px;
+  margin-left: -6px;
+}
+.capacity-bikes,
+.capacity-racks {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+.capacity-bikes {
+  background: #d2e2ad;
+  box-shadow: 0 0 0 2px #1d1f1e;
+}
+.capacity-racks {
+  border: 2px solid #8d8e89;
+  background: #1d1f1e;
+}
+.capacity-values {
+  color: #c2c2be;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* 표로 보기 */
+.analysis-details summary {
+  cursor: pointer;
+  color: #e7e7e3;
+  font-size: 18px;
+  font-weight: 700;
+}
+.analysis-table-wrap {
+  margin-top: 18px;
+  overflow-x: auto;
+}
+.analysis-table {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: collapse;
+  font-size: 17px;
+}
+.analysis-table th,
+.analysis-table td {
+  padding: 12px;
+  border-bottom: 1px solid #2a2c2a;
+  text-align: left;
+  white-space: nowrap;
+}
+.analysis-table thead th {
+  border-bottom-color: #353632;
+  color: #aaa;
+  font-size: 15px;
+  font-weight: 600;
+}
+.analysis-table thead button,
+.analysis-district {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font-weight: inherit;
+  text-align: inherit;
+}
+.analysis-table thead th.col-number button {
+  width: 100%;
+  text-align: right;
+}
+.analysis-district {
+  color: #e7e7e3;
+  font-weight: 700;
+}
+.analysis-district:hover {
+  color: #d2e2ad;
+  text-decoration: underline;
+}
+.analysis-table .col-number {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.analysis-table .col-strong {
+  font-weight: 700;
+}
+.analysis-table .col-shortage {
+  color: #ff7772;
+  font-weight: 700;
 }
 .shortage-card {
   grid-area: shortage;
@@ -644,7 +1039,8 @@ p {
   .topbar nav {
     gap: 2px;
   }
-  .topbar nav span {
+  .topbar nav span,
+  .topbar nav button {
     padding: 14px;
   }
   .criteria {
@@ -680,7 +1076,8 @@ p {
     font-size: 15px;
     overflow: auto;
   }
-  .topbar nav span {
+  .topbar nav span,
+  .topbar nav button {
     padding: 10px 15px;
   }
   .topbar-actions {
@@ -858,12 +1255,46 @@ p {
     flex-wrap: wrap;
     white-space: normal;
   }
-  .todo-action {
+  .overview-action {
     gap: 12px;
     padding-inline: 15px;
     font-size: 18px;
   }
   .map-zoom-hint {
     max-width: calc(100% - 30px);
+  }
+}
+
+@media (max-width: 1100px) {
+  .analysis-highlights {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .analysis-charts {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 600px) {
+  .highlight,
+  .analysis-card {
+    padding: 22px 18px;
+  }
+  .highlight strong {
+    font-size: 21px;
+  }
+  .analysis-table {
+    font-size: 14px;
+  }
+}
+@media (max-width: 600px) {
+  .district-heatmap {
+    height: 300px;
+  }
+  .balance-chart button {
+    grid-template-columns: minmax(0, 1fr) 64px minmax(0, 1fr);
+    font-size: 12px;
+  }
+  .capacity-chart button {
+    grid-template-columns: 62px minmax(0, 1fr) 84px;
+    font-size: 12px;
   }
 }
