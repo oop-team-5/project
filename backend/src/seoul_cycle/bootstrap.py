@@ -1,15 +1,20 @@
-"""구체 클래스를 연결하는 유일한 조립 지점. 호출마다 새 객체를 만든다."""
+"""대시보드의 구체 구현과 수명을 조립한다."""
 
 from seoul_cycle.analysis.station_analyzer import StationAnalyzer
 from seoul_cycle.contracts.ports import (
+    DashboardSnapshotProvider,
     StationAnalytics,
     StationReader,
     StationSource,
     StationStore,
 )
 from seoul_cycle.fetching.api_fetcher import ApiFetcher
-from seoul_cycle.presentation.dashboard_controller import DashboardController
+from seoul_cycle.presentation.dashboard_controller import (
+    DashboardController,
+    FreshDashboardSnapshotProvider,
+)
 from seoul_cycle.settings import Settings, loadSettings
+from seoul_cycle.snapshot_cache import CachedDashboardSnapshotProvider
 from seoul_cycle.storage.station_repository import StationRepository
 
 
@@ -24,6 +29,7 @@ def buildController(settings: Settings) -> DashboardController:
     return DashboardController(source, analytics, repository)
 
 
-def getController() -> DashboardController:
-    """FastAPI 요청에 연결할 의존성. 전역 singleton/cache를 만들지 않는다."""
-    return buildController(loadSettings())
+def buildDashboardSnapshotProvider() -> DashboardSnapshotProvider:
+    """앱마다 캐시 하나를 두고 실제 수집이 필요할 때만 컨트롤러를 만든다."""
+    source = FreshDashboardSnapshotProvider(lambda: buildController(loadSettings()))
+    return CachedDashboardSnapshotProvider(source)
