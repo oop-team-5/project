@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 from typing import TYPE_CHECKING, Protocol
 
-from seoul_cycle.contracts.types import StationStats
+from seoul_cycle.contracts.types import DashboardSnapshot, StationStats
 
 if TYPE_CHECKING:
     from seoul_cycle.domain.bike_station import BikeStation
@@ -37,3 +37,7 @@ class StationAnalytics(Protocol):
     def getShortageStations(self) -> list[BikeStation]: ...
 
     def calculateSummary(self) -> StationStats: ...
+
+
+class DashboardSnapshotProvider(Protocol):
+    def getSnapshot(self) -> DashboardSnapshot: ...

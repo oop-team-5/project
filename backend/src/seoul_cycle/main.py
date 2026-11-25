@@ -5,9 +5,10 @@ from dataclasses import asdict
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
+from seoul_cycle.bootstrap import buildDashboardSnapshotProvider
 from seoul_cycle.contracts.errors import DataSourceError
 from seoul_cycle.contracts.types import ErrorResponse
-from seoul_cycle.presentation.http import router
+from seoul_cycle.presentation.http import createRouter
 
 
 async def notImplementedHandler(_request: Request, _exc: Exception) -> JSONResponse:
@@ -32,7 +33,7 @@ def createApp() -> FastAPI:
     )
     application.add_exception_handler(NotImplementedError, notImplementedHandler)
     application.add_exception_handler(DataSourceError, dataSourceErrorHandler)
-    application.include_router(router)
+    application.include_router(createRouter(buildDashboardSnapshotProvider()))
     return application
 
 

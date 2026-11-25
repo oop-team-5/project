@@ -1,5 +1,6 @@
 """작업 영역 4. 분석을 조정하고 화면용 데이터를 전달한다. HTML을 그리지 않는다."""
 
+from collections.abc import Callable
 from datetime import UTC, datetime
 
 from seoul_cycle.contracts.ports import (
@@ -83,3 +84,15 @@ class DashboardController:
             occupancyRate=station.getOccupancyRate(),
             status=station.getStatus(),
         )
+
+
+class FreshDashboardSnapshotProvider:
+    """수집할 때마다 독립된 컨트롤러를 사용한다."""
+
+    def __init__(self, createController: Callable[[], DashboardController]) -> None:
+        self._createController = createController
+
+    def getSnapshot(self) -> DashboardSnapshot:
+        controller = self._createController()
+        controller.refreshData()
+        return controller.getDashboard()
