@@ -1,43 +1,23 @@
 import { messages, type Language } from "./i18n";
 import type { StationStats } from "../../api/types";
-import { formatCount, formatFetchedAt } from "./format";
+import { formatCount } from "./format";
 import { ArrowIcon, InfoIcon } from "./Icons";
 
 export function SummaryCards({
   language,
   summary,
-  fetchedAt,
-  onRefresh,
   onShowAnalysis,
-  isLoading,
 }: {
   language: Language;
   summary: StationStats;
-  fetchedAt: string;
-  onRefresh: () => void;
   onShowAnalysis: () => void;
-  isLoading: boolean;
 }) {
   const t = messages[language];
   const rate = summary.averageOccupancyRate;
   const gauge = Math.max(0, Math.min(100, rate ?? 0));
   return (
     <section className="card overview" aria-label={t.title}>
-      <div className="section-heading">
-        <div>
-          <h1>{t.title}</h1>
-          <p>{t.timestamp(formatFetchedAt(fetchedAt, language))}</p>
-        </div>
-        <button
-          className="refresh"
-          onClick={onRefresh}
-          disabled={isLoading}
-          aria-label={t.refresh}
-          title={t.refresh}
-        >
-          ↗
-        </button>
-      </div>
+      <h1>{t.title}</h1>
       <div className="gauge">
         <svg viewBox="0 0 240 135" aria-hidden="true">
           <path

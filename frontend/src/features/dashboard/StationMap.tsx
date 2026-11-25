@@ -78,9 +78,11 @@ function FocusOnStations({
 function StationMarkers({
   stations,
   language,
+  onOverviewChange,
 }: {
   stations: StationView[];
   language: Language;
+  onOverviewChange: (overview: boolean) => void;
 }) {
   const t = messages[language];
   const map = useMap();
@@ -91,13 +93,17 @@ function StationMarkers({
   useMapEvents({
     moveend: () => setView({ bounds: map.getBounds(), zoom: map.getZoom() }),
   });
+  const isOverview = view.zoom < DETAILED_MARKER_ZOOM;
+  useEffect(() => {
+    onOverviewChange(isOverview);
+  }, [isOverview, onOverviewChange]);
 
   const visibleStations = useMemo(() => {
     const cells = new Set<string>();
     return stations.filter((station) => {
       const position: [number, number] = [station.latitude, station.longitude];
       if (!view.bounds.contains(position)) return false;
-      if (view.zoom >= DETAILED_MARKER_ZOOM) return true;
+      if (!isOverview) return true;
 
       // Global pixel cells keep the same representative while the map pans.
       const point = map.project(position, view.zoom);
@@ -106,7 +112,7 @@ function StationMarkers({
       cells.add(cell);
       return true;
     });
-  }, [map, stations, view]);
+  }, [isOverview, map, stations, view]);
   const markers = useMemo(
     () =>
       visibleStations.map((station) => (
@@ -136,16 +142,7 @@ function StationMarkers({
       )),
     [visibleStations, language, t],
   );
-  return (
-    <>
-      {markers}
-      {view.zoom < DETAILED_MARKER_ZOOM && (
-        <div className="map-zoom-hint" role="status">
-          {t.mapHint}
-        </div>
-      )}
-    </>
-  );
+  return <>{markers}</>;
 }
 
 export function StationMap({
@@ -160,8 +157,13 @@ export function StationMap({
   focusOnStations?: boolean;
 }) {
   const t = messages[language];
+  const [showZoomHint, setShowZoomHint] = useState(false);
   return (
     <section className="map-card" aria-label={t.map}>
+      <div className="map-toolbar">
+        {controls}
+        {showZoomHint && <p className="map-zoom-hint" role="status">{t.mapHint}</p>}
+      </div>
       <MapContainer
         bounds={SEOUL_BOUNDS}
         maxBounds={PAN_LIMIT}
@@ -175,11 +177,14 @@ export function StationMap({
         />
         <LimitZoomToSeoul />
         <ResizeMap />
-        <StationMarkers stations={stations} language={language} />
+        <StationMarkers
+          stations={stations}
+          language={language}
+          onOverviewChange={setShowZoomHint}
+        />
         <FocusOnStations stations={stations} active={focusOnStations} />
         <MapZoom language={language} />
       </MapContainer>
-      {controls}
       <div className="map-legend">
         <span>
           <i className="dot shortage" />
@@ -198,7 +203,6 @@ export function StationMap({
           {t.legendUnknown}
         </span>
       </div>
-      <div className="map-location">◎ &nbsp;{t.mapLocation}</div>
     </section>
   );
 }

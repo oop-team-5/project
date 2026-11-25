@@ -128,6 +128,7 @@ export function DashboardPage() {
           </button>
           <button
             className="refresh-header"
+            type="button"
             onClick={refresh}
             disabled={isLoading}
             aria-label={t.refresh}
@@ -156,10 +157,7 @@ export function DashboardPage() {
             <SummaryCards
               language={language}
               summary={snapshot.summary}
-              fetchedAt={snapshot.fetchedAt}
-              onRefresh={refresh}
               onShowAnalysis={showAnalysis}
-              isLoading={isLoading}
             />
             <DistrictComparison
               districtStats={snapshot.districtStats}

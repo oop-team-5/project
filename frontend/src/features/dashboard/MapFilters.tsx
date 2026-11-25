@@ -35,18 +35,21 @@ export function MapFilters({
           aria-label={t.searchPlaceholder}
         />
       </label>
-      <select
-        className="map-status"
-        value={status}
-        onChange={(event) => onStatusChange(event.target.value as StatusFilter)}
-        aria-label={t.statusFilterLabel}
-      >
-        {STATUS_OPTIONS.map((option) => (
-          <option key={option} value={option}>
-            {option === "all" ? t.allStatuses : t.statuses[option]}
-          </option>
-        ))}
-      </select>
+      <div className="map-status-field">
+        <select
+          className="map-status"
+          name="status"
+          value={status}
+          onChange={(event) => onStatusChange(event.target.value as StatusFilter)}
+          aria-label={t.statusFilterLabel}
+        >
+          {STATUS_OPTIONS.map((option) => (
+            <option key={option} value={option}>
+              {option === "all" ? t.allStatuses : t.statuses[option]}
+            </option>
+          ))}
+        </select>
+      </div>
       {isFiltering && (
         <p className="map-filter-result" role="status">
           {resultCount === 0 ? t.noMatch : t.matchCount(formatCount(resultCount))}
