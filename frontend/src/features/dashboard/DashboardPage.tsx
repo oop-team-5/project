@@ -53,10 +53,6 @@ export function DashboardPage() {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [district, setDistrict] = useState<string | null>(null);
   const [view, setView] = useState<"overview" | "districts">("overview");
-  const showAnalysis = () => {
-    setView("districts");
-    window.scrollTo({ top: 0 });
-  };
   const showDistrictOnMap = (name: string) => {
     setDistrict(name);
     setView("overview");
@@ -128,6 +124,7 @@ export function DashboardPage() {
           </button>
           <button
             className="refresh-header"
+            type="button"
             onClick={refresh}
             disabled={isLoading}
             aria-label={t.refresh}
@@ -153,14 +150,7 @@ export function DashboardPage() {
       ) : snapshot ? (
         <main className="content">
           <div className="left-column">
-            <SummaryCards
-              language={language}
-              summary={snapshot.summary}
-              fetchedAt={snapshot.fetchedAt}
-              onRefresh={refresh}
-              onShowAnalysis={showAnalysis}
-              isLoading={isLoading}
-            />
+            <SummaryCards language={language} summary={snapshot.summary} />
             <DistrictComparison
               districtStats={snapshot.districtStats}
               selected={district}

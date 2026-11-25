@@ -1,13 +1,14 @@
 @font-face {
   font-family: "Pretendard Variable";
   src: url("pretendard/dist/web/variable/woff2/PretendardVariable.woff2")
-    format("woff2-variations");
+    format("woff2");
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;
 }
 :root {
-  font-family: "Pretendard Variable", "Malgun Gothic", sans-serif;
+  --app-font: "Pretendard Variable", "Malgun Gothic", sans-serif;
+  font-family: var(--app-font);
   color: #f3f3ef;
   background: #101110;
   font-synthesis: none;
@@ -20,8 +21,13 @@ body {
   margin: 0;
   min-width: 320px;
 }
-button {
+button,
+input,
+select,
+textarea {
   font: inherit;
+}
+button {
   cursor: pointer;
 }
 button:focus-visible {
@@ -102,13 +108,20 @@ p {
   white-space: nowrap;
 }
 .refresh-header {
+  display: grid;
+  place-items: center;
+  flex: none;
   border: 1px solid #353632;
   background: transparent;
   color: #e7e7e3;
   border-radius: 50%;
-  width: 74px;
-  height: 74px;
-  font-size: 35px;
+  width: 42px;
+  height: 42px;
+  font-size: 22px;
+  line-height: 1;
+}
+.refresh-header:hover:not(:disabled) {
+  background: #242521;
 }
 .content {
   display: grid;
@@ -130,26 +143,10 @@ p {
   padding: 34px 30px 30px;
   container-type: inline-size;
 }
-.section-heading {
-  display: flex;
-  justify-content: space-between;
-}
-.section-heading h1,
+.overview h1,
 .card h2 {
   font-size: 30px;
   letter-spacing: -1.4px;
-}
-.section-heading p {
-  margin-top: 10px;
-  color: #aaa;
-  font-size: 19px;
-}
-.refresh {
-  background: none;
-  border: 0;
-  color: #aaa;
-  font-size: 25px;
-  align-self: flex-start;
 }
 .gauge {
   position: relative;
@@ -244,58 +241,36 @@ p {
 .surplus-text {
   color: #e8d77c;
 }
-.overview-action {
-  width: 100%;
-  border: 0;
-  height: 78px;
-  background: #e7e7b2;
-  color: #171914;
-  border-radius: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 24px;
-  font-size: 22px;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-.overview-action:hover {
-  background: #f1f1c6;
-}
-.overview-action:focus-visible {
-  outline: 2px solid #f5f5f0;
-  outline-offset: 3px;
-}
-.overview-action svg {
-  width: 24px;
-}
 .criteria {
   margin-top: 20px;
   min-height: 76px;
+  padding: 12px;
   border: 1px solid #3a3b37;
   border-radius: 18px;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
+  align-content: center;
   justify-content: center;
-  gap: clamp(5px, 2cqi, 14px);
+  gap: 8px clamp(5px, 2cqi, 14px);
   color: #deded8;
   font-size: clamp(10px, 2.35cqi, 14px);
   white-space: nowrap;
 }
-.criteria svg {
+.criteria-heading,
+.criteria-rules {
+  display: flex;
+  align-items: center;
+  gap: 6px clamp(5px, 2cqi, 14px);
+}
+.criteria-heading svg {
   width: 24px;
   flex: none;
 }
-.criteria span + span {
-  border-left: 1px solid #444;
-  padding-left: clamp(5px, 2cqi, 14px);
-}
-.criteria span:nth-child(2) + span {
-  border: 0;
-  padding: 0;
-}
-.criteria b {
-  color: #ff7772;
+.criteria-rules {
+  max-inline-size: 100%;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 .district-card {
   grid-area: district;
@@ -768,6 +743,8 @@ p {
 }
 .shortage-card {
   grid-area: shortage;
+  display: flex;
+  flex-direction: column;
   min-width: 0;
   min-height: 360px;
   padding: 30px 34px;
@@ -796,7 +773,10 @@ p {
 }
 .shortage-table-wrap {
   margin-top: 18px;
-  max-height: 340px;
+  flex: 1 1 auto;
+  min-block-size: 0;
+  /* Let the district card set the shared row height. */
+  contain: size;
   overflow: auto;
 }
 .shortage-table {
@@ -840,6 +820,10 @@ p {
   font-weight: 700;
 }
 .map-card {
+  --map-overlay-background: rgb(20 24 22 / 28%);
+  --map-overlay-detail-background: rgb(20 24 22 / 53%);
+  --map-overlay-filter: blur(7px) brightness(0.77);
+  --map-overlay-shadow: 0 1px 2px #000b;
   grid-area: map;
   position: relative;
   min-width: 0;
@@ -853,35 +837,49 @@ p {
   width: 100%;
   z-index: 0;
 }
-.map-zoom-hint {
+.map-search,
+.map-status,
+.map-filter-result,
+.map-zoom button,
+.map-legend,
+:root .station-map .leaflet-control-attribution,
+.station-map .leaflet-popup-content-wrapper {
+  background: var(--map-overlay-background);
+  -webkit-backdrop-filter: var(--map-overlay-filter);
+  backdrop-filter: var(--map-overlay-filter);
+  color: #fff;
+  text-shadow: var(--map-overlay-shadow);
+}
+:root .station-map .leaflet-control-attribution {
+  background: var(--map-overlay-detail-background);
+}
+.station-map .leaflet-control-attribution a {
+  color: #ddf2e4;
+  text-decoration: underline;
+}
+.station-map :is(.leaflet-popup-content-wrapper, .leaflet-popup-tip) {
+  background: var(--map-overlay-detail-background);
+}
+:root .station-map .leaflet-popup-close-button {
+  color: #fff;
+}
+.map-toolbar {
   position: absolute;
   z-index: 500;
-  top: 100px;
-  left: 26px;
-  padding: 10px 15px;
-  border-radius: 12px;
-  color: #252927;
-  background: #fff;
-  box-shadow: 0 2px 8px #0002;
-  font-size: 14px;
+  inset-block-start: 32px;
+  inset-inline: 26px;
   pointer-events: none;
 }
 .map-filters {
-  position: absolute;
-  z-index: 500;
-  left: 26px;
-  right: 90px;
-  top: 32px;
+  inline-size: 100%;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 12px;
-  color: #222;
 }
 .map-search,
 .map-status,
 .map-filter-result {
-  background: #fff;
   border-radius: 17px;
   box-shadow: 0 2px 8px #0002;
 }
@@ -889,10 +887,11 @@ p {
   display: flex;
   align-items: center;
   gap: 10px;
-  width: 310px;
-  max-width: 100%;
+  flex: 1 1 min(18rem, 100%);
+  min-inline-size: 0;
+  max-inline-size: 310px;
   padding: 0 18px;
-  color: #6b6d68;
+  pointer-events: auto;
 }
 .map-search svg {
   flex: none;
@@ -906,23 +905,93 @@ p {
   border: 0;
   outline: none;
   background: transparent;
-  color: #222;
+  color: inherit;
+  text-shadow: inherit;
   font: inherit;
   font-size: 17px;
+}
+.map-search input::placeholder {
+  color: inherit;
+  opacity: 1;
 }
 .map-search:focus-within,
 .map-status:focus-visible {
   outline: 3px solid #d2e2ad;
   outline-offset: 2px;
 }
+.map-status-field {
+  position: relative;
+  flex: none;
+  inline-size: 160px;
+  max-inline-size: 100%;
+  color: #fff;
+}
+.map-status-field::after {
+  content: "";
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-end: 18px;
+  width: 7px;
+  height: 7px;
+  border: solid currentColor;
+  border-width: 0 1.5px 1.5px 0;
+  transform: translateY(-70%) rotate(45deg);
+  pointer-events: none;
+}
 .map-status {
-  min-width: 160px;
-  padding: 17px 18px;
+  appearance: none;
+  inline-size: 100%;
+  padding-block: 17px;
+  padding-inline: 18px 38px;
   border: 0;
-  color: #222;
-  font: inherit;
+  color-scheme: dark;
   font-size: 17px;
   cursor: pointer;
+  pointer-events: auto;
+}
+.map-status option {
+  background: #272e28;
+  color: #fff;
+}
+@supports (appearance: base-select) and selector(::picker(select)) {
+  .map-status,
+  .map-status::picker(select) {
+    appearance: base-select;
+  }
+  .map-status::picker-icon {
+    display: none;
+  }
+  .map-status::picker(select) {
+    margin-block-start: 6px;
+    padding: 4px;
+    border: 1px solid #fff5;
+    border-radius: 14px;
+    background: var(--map-overlay-detail-background);
+    -webkit-backdrop-filter: var(--map-overlay-filter);
+    backdrop-filter: var(--map-overlay-filter);
+    color: #fff;
+    text-shadow: var(--map-overlay-shadow);
+    box-shadow: 0 6px 20px #0003;
+    font-family: var(--app-font);
+  }
+  .map-status option {
+    background: transparent;
+    justify-content: space-between;
+    min-block-size: 42px;
+    padding: 8px 12px;
+    border-radius: 9px;
+  }
+  .map-status option::checkmark {
+    order: 1;
+  }
+  .map-status option:checked {
+    background: rgb(28 44 34 / 78%);
+    font-weight: 650;
+  }
+  .map-status option:is(:hover, :focus-visible) {
+    background: rgb(57 73 60 / 78%);
+    outline-offset: -2px;
+  }
 }
 .map-filter-result {
   margin: 0;
@@ -930,20 +999,16 @@ p {
   font-size: 15px;
   font-weight: 600;
 }
-.map-legend,
-.map-location {
+.map-legend {
   position: absolute;
   z-index: 500;
   bottom: 24px;
-  background: white;
-  color: #252927;
+  inset-inline-start: 25px;
+  max-inline-size: calc(100% - 50px);
   border-radius: 18px;
   padding: 13px 17px;
   box-shadow: 0 2px 8px #0002;
   font-size: 14px;
-}
-.map-legend {
-  left: 25px;
   display: flex;
   gap: 16px;
   flex-wrap: wrap;
@@ -953,9 +1018,6 @@ p {
   align-items: center;
   gap: 9px;
   white-space: nowrap;
-}
-.map-location {
-  right: 20px;
 }
 .dot {
   display: inline-block;
@@ -992,9 +1054,6 @@ p {
   width: 18px;
   height: 18px;
 }
-.station-popup {
-  color: #222;
-}
 .station-popup p {
   margin: 4px 0;
 }
@@ -1009,10 +1068,8 @@ p {
 .map-zoom button {
   width: 52px;
   height: 52px;
-  background: white;
   border: 0;
   border-radius: 14px;
-  color: #141414;
   font-size: 31px;
   box-shadow: 0 2px 8px #0002;
 }
@@ -1026,8 +1083,9 @@ p {
 .empty-state {
   padding: 36px;
 }
-.leaflet-container {
-  font: inherit;
+:root .leaflet-container,
+:root .leaflet-container :is(.leaflet-control-zoom-in, .leaflet-control-zoom-out, .leaflet-popup-close-button) {
+  font-family: var(--app-font);
 }
 .leaflet-popup-content {
   font-size: 14px;
@@ -1042,11 +1100,6 @@ p {
   .topbar nav span,
   .topbar nav button {
     padding: 14px;
-  }
-  .criteria {
-    flex-wrap: wrap;
-    white-space: normal;
-    padding: 12px;
   }
   .gauge-label strong {
     font-size: 68px;
@@ -1084,11 +1137,6 @@ p {
     font-size: 12px;
     gap: 8px;
   }
-  .refresh-header {
-    width: 42px;
-    height: 42px;
-    font-size: 25px;
-  }
   .content {
     display: flex;
     flex-direction: column;
@@ -1121,6 +1169,10 @@ p {
     min-height: 180px;
     padding: 24px 18px;
   }
+  .shortage-table-wrap {
+    contain: none;
+    max-block-size: 340px;
+  }
   .shortage-table {
     font-size: 14px;
   }
@@ -1131,7 +1183,7 @@ p {
   .shortage-table .col-rank {
     width: 36px;
   }
-  .section-heading h1,
+  .overview h1,
   .card h2 {
     font-size: 24px;
   }
@@ -1139,14 +1191,12 @@ p {
     max-width: 380px;
     margin-top: 35px;
   }
-  .map-filters {
-    top: 15px;
-    left: 15px;
-    right: 70px;
-    gap: 8px;
+  .map-toolbar {
+    inset-block-start: 15px;
+    inset-inline: 15px;
   }
-  .map-search {
-    width: 100%;
+  .map-filters {
+    gap: 8px;
   }
   .map-search input,
   .map-status {
@@ -1157,15 +1207,10 @@ p {
     padding: 9px 14px;
     font-size: 13px;
   }
-  .map-zoom-hint {
-    top: 72px;
-    left: 15px;
-    font-size: 12px;
-  }
   .map-legend {
     bottom: 20px;
-    left: 12px;
-    right: 12px;
+    inset-inline-start: 12px;
+    max-inline-size: calc(100% - 24px);
     gap: 8px;
     font-size: 11px;
     padding: 10px;
@@ -1173,9 +1218,6 @@ p {
   .map-legend .dot {
     width: 12px;
     height: 12px;
-  }
-  .map-location {
-    display: none;
   }
   .map-zoom {
     right: 10px !important;
@@ -1192,12 +1234,6 @@ p {
 @media (max-width: 800px) {
   .overview-stats > div {
     padding: 0 6px;
-  }
-  .criteria {
-    gap: 8px;
-  }
-  .criteria span + span {
-    padding-left: 8px;
   }
 }
 .language-toggle {
@@ -1254,14 +1290,6 @@ p {
     justify-content: flex-end;
     flex-wrap: wrap;
     white-space: normal;
-  }
-  .overview-action {
-    gap: 12px;
-    padding-inline: 15px;
-    font-size: 18px;
-  }
-  .map-zoom-hint {
-    max-width: calc(100% - 30px);
   }
 }
 
