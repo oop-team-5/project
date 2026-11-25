@@ -837,6 +837,9 @@ p {
   font-weight: 700;
 }
 .map-card {
+  --map-overlay-background: rgb(255 255 255 / 38%);
+  --map-overlay-detail-background: rgb(255 255 255 / 56%);
+  --map-overlay-blur: blur(10px);
   grid-area: map;
   position: relative;
   min-width: 0;
@@ -849,6 +852,27 @@ p {
   height: 100%;
   width: 100%;
   z-index: 0;
+}
+.map-search,
+.map-status,
+.map-filter-result,
+.map-zoom-hint,
+.map-zoom button,
+:root .station-map .leaflet-control-attribution,
+.station-map .leaflet-popup-content-wrapper {
+  background: var(--map-overlay-background);
+  -webkit-backdrop-filter: var(--map-overlay-blur);
+  backdrop-filter: var(--map-overlay-blur);
+}
+:root .station-map .leaflet-control-attribution {
+  background: var(--map-overlay-detail-background);
+  color: #1c251f;
+}
+.station-map .leaflet-control-attribution a {
+  color: #16485a;
+}
+.station-map :is(.leaflet-popup-content-wrapper, .leaflet-popup-tip) {
+  background: var(--map-overlay-detail-background);
 }
 .map-toolbar {
   position: absolute;
@@ -865,7 +889,6 @@ p {
   padding: 10px 15px;
   border-radius: 12px;
   color: #252927;
-  background: #fff;
   box-shadow: 0 2px 8px #0002;
   font-size: 14px;
 }
@@ -880,7 +903,6 @@ p {
 .map-search,
 .map-status,
 .map-filter-result {
-  background: #fff;
   border-radius: 17px;
   box-shadow: 0 2px 8px #0002;
 }
@@ -892,7 +914,7 @@ p {
   min-inline-size: 0;
   max-inline-size: 310px;
   padding: 0 18px;
-  color: #6b6d68;
+  color: #414941;
   pointer-events: auto;
 }
 .map-search svg {
@@ -910,6 +932,10 @@ p {
   color: #222;
   font: inherit;
   font-size: 17px;
+}
+.map-search input::placeholder {
+  color: #414941;
+  opacity: 1;
 }
 .map-search:focus-within,
 .map-status:focus-visible {
@@ -964,12 +990,15 @@ p {
     padding: 4px;
     border: 1px solid #dce0d8;
     border-radius: 14px;
-    background: #fff;
+    background: var(--map-overlay-detail-background);
+    -webkit-backdrop-filter: var(--map-overlay-blur);
+    backdrop-filter: var(--map-overlay-blur);
     color: #252927;
     box-shadow: 0 6px 20px #0003;
     font-family: var(--app-font);
   }
   .map-status option {
+    background: transparent;
     justify-content: space-between;
     min-block-size: 42px;
     padding: 8px 12px;
@@ -979,11 +1008,11 @@ p {
     order: 1;
   }
   .map-status option:checked {
-    background: #e5edda;
+    background: rgb(229 237 218 / 80%);
     font-weight: 650;
   }
   .map-status option:is(:hover, :focus-visible) {
-    background: #eff2eb;
+    background: rgb(239 242 235 / 80%);
     outline-offset: -2px;
   }
 }
@@ -999,10 +1028,11 @@ p {
   bottom: 24px;
   inset-inline-start: 25px;
   max-inline-size: calc(100% - 50px);
-  background: rgb(20 24 22 / 38%);
-  -webkit-backdrop-filter: blur(10px) brightness(0.68);
-  backdrop-filter: blur(10px) brightness(0.68);
+  background: rgb(20 24 22 / 14%);
+  -webkit-backdrop-filter: blur(8px) brightness(0.86);
+  backdrop-filter: blur(8px) brightness(0.86);
   color: #fff;
+  text-shadow: 0 1px 2px #000, 0 0 4px #000;
   border-radius: 18px;
   padding: 13px 17px;
   box-shadow: 0 2px 8px #0002;
@@ -1069,7 +1099,6 @@ p {
 .map-zoom button {
   width: 52px;
   height: 52px;
-  background: white;
   border: 0;
   border-radius: 14px;
   color: #141414;
