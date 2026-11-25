@@ -78,11 +78,9 @@ function FocusOnStations({
 function StationMarkers({
   stations,
   language,
-  onOverviewChange,
 }: {
   stations: StationView[];
   language: Language;
-  onOverviewChange: (overview: boolean) => void;
 }) {
   const t = messages[language];
   const map = useMap();
@@ -94,9 +92,6 @@ function StationMarkers({
     moveend: () => setView({ bounds: map.getBounds(), zoom: map.getZoom() }),
   });
   const isOverview = view.zoom < DETAILED_MARKER_ZOOM;
-  useEffect(() => {
-    onOverviewChange(isOverview);
-  }, [isOverview, onOverviewChange]);
 
   const visibleStations = useMemo(() => {
     const cells = new Set<string>();
@@ -157,13 +152,9 @@ export function StationMap({
   focusOnStations?: boolean;
 }) {
   const t = messages[language];
-  const [showZoomHint, setShowZoomHint] = useState(false);
   return (
     <section className="map-card" aria-label={t.map}>
-      <div className="map-toolbar">
-        {controls}
-        {showZoomHint && <p className="map-zoom-hint" role="status">{t.mapHint}</p>}
-      </div>
+      {controls && <div className="map-toolbar">{controls}</div>}
       <MapContainer
         bounds={SEOUL_BOUNDS}
         maxBounds={PAN_LIMIT}
@@ -177,11 +168,7 @@ export function StationMap({
         />
         <LimitZoomToSeoul />
         <ResizeMap />
-        <StationMarkers
-          stations={stations}
-          language={language}
-          onOverviewChange={setShowZoomHint}
-        />
+        <StationMarkers stations={stations} language={language} />
         <FocusOnStations stations={stations} active={focusOnStations} />
         <MapZoom language={language} />
       </MapContainer>

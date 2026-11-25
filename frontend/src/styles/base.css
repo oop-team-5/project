@@ -822,7 +822,7 @@ p {
 .map-card {
   --map-overlay-background: rgb(20 24 22 / 28%);
   --map-overlay-detail-background: rgb(20 24 22 / 53%);
-  --map-overlay-filter: blur(5px) brightness(0.77);
+  --map-overlay-filter: blur(7px) brightness(0.77);
   --map-overlay-shadow: 0 1px 2px #000b;
   grid-area: map;
   position: relative;
@@ -840,7 +840,6 @@ p {
 .map-search,
 .map-status,
 .map-filter-result,
-.map-zoom-hint,
 .map-zoom button,
 .map-legend,
 :root .station-map .leaflet-control-attribution,
@@ -869,17 +868,7 @@ p {
   z-index: 500;
   inset-block-start: 32px;
   inset-inline: 26px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 12px;
   pointer-events: none;
-}
-.map-zoom-hint {
-  padding: 10px 15px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px #0002;
-  font-size: 14px;
 }
 .map-filters {
   inline-size: 100%;
@@ -1205,7 +1194,6 @@ p {
   .map-toolbar {
     inset-block-start: 15px;
     inset-inline: 15px;
-    gap: 8px;
   }
   .map-filters {
     gap: 8px;
@@ -1218,9 +1206,6 @@ p {
   .map-filter-result {
     padding: 9px 14px;
     font-size: 13px;
-  }
-  .map-zoom-hint {
-    font-size: 12px;
   }
   .map-legend {
     bottom: 20px;
