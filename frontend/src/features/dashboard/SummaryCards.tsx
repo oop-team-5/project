@@ -69,13 +69,19 @@ export function SummaryCards({
         </div>
       </div>
       <div className="criteria">
-        <InfoIcon />
-        <span>{t.criteria}</span>
-        <span>
-          {t.below} <b>{t.statuses.shortage}</b>
-        </span>
-        <span>{t.normalRule}</span>
-        <span>{t.aboveRule}</span>
+        <div className="criteria-heading">
+          <InfoIcon />
+          <span>{t.criteria}</span>
+        </div>
+        <div className="criteria-rules">
+          <span>
+            {t.below} <b className="shortage-text">{t.statuses.shortage}</b>
+          </span>
+          <span>{t.normalRule}</span>
+          <span>
+            {t.above} <b className="surplus-text">{t.statuses.surplus}</b>
+          </span>
+        </div>
       </div>
     </section>
   );
