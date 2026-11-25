@@ -1,16 +1,14 @@
 import { messages, type Language } from "./i18n";
 import type { StationStats } from "../../api/types";
 import { formatCount } from "./format";
-import { ArrowIcon, InfoIcon } from "./Icons";
+import { InfoIcon } from "./Icons";
 
 export function SummaryCards({
   language,
   summary,
-  onShowAnalysis,
 }: {
   language: Language;
   summary: StationStats;
-  onShowAnalysis: () => void;
 }) {
   const t = messages[language];
   const rate = summary.averageOccupancyRate;
@@ -70,10 +68,6 @@ export function SummaryCards({
           <small>{t.surplusRule}</small>
         </div>
       </div>
-      <button className="overview-action" type="button" onClick={onShowAnalysis}>
-        <strong>{t.viewDistricts}</strong>
-        <ArrowIcon />
-      </button>
       <div className="criteria">
         <InfoIcon />
         <span>{t.criteria}</span>
