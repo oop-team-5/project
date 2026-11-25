@@ -8,12 +8,14 @@ export function SummaryCards({
   summary,
   fetchedAt,
   onRefresh,
+  onShowAnalysis,
   isLoading,
 }: {
   language: Language;
   summary: StationStats;
   fetchedAt: string;
   onRefresh: () => void;
+  onShowAnalysis: () => void;
   isLoading: boolean;
 }) {
   const t = messages[language];
@@ -58,6 +60,11 @@ export function SummaryCards({
           <span>{t.averageRate}</span>
         </div>
       </div>
+      <p className="overview-meta">
+        {t.stationTotal(formatCount(summary.stationCount))}
+        <span aria-hidden="true"> · </span>
+        {t.rackTotal(formatCount(summary.totalRacks))}
+      </p>
       <div className="overview-stats">
         <div>
           <strong>
@@ -83,13 +90,8 @@ export function SummaryCards({
           <small>{t.surplusRule}</small>
         </div>
       </div>
-      <button
-        className="todo-action"
-        type="button"
-        disabled
-        title={t.comingSoon}
-      >
-        <strong>{t.viewShortage}</strong>
+      <button className="overview-action" type="button" onClick={onShowAnalysis}>
+        <strong>{t.viewDistricts}</strong>
         <ArrowIcon />
       </button>
       <div className="criteria">
